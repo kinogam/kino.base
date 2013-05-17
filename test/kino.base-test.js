@@ -1,5 +1,8 @@
-﻿/// <reference path="../lib/jquery.js" />
+﻿/// <reference path="../lib/kino.base.js" />
 /// <reference path="qunit/qunit.js" />
+
+module("namespace");
+
 test("can create a namespace", function () {
 
     kino.namespace("myspace");
@@ -27,6 +30,8 @@ test("if the namespace is exist, kino.namespace should not replace it", function
 
 });
 
+module("extend");
+
 test("can extend from Class", function () {
     var MyClass = function () {
         this.name = 'Tom';
@@ -53,6 +58,7 @@ test("can extend from obj", function () {
     equal(obj.text, 'hello');
 });
 
+module("observer");
 
 test("can use observer model to trigger event", function () {
     expect(2);
@@ -70,6 +76,26 @@ test("can use observer model to trigger event", function () {
     });
 
     obj.trigger("alert");
+
+});
+
+test("can pass data to event handler", function () {
+    expect(3);
+
+    var obj = {};
+    kino.extend(obj, kino.Events);
+
+    obj.on("test", function (event, a, b) {
+        equal(a, "hello");
+        equal(b, "world");
+    });
+
+    obj.on("other", function (event, obj) {
+        equal(obj.name, "kino");
+    });
+
+    obj.trigger("test", ["hello", "world"]);
+    obj.trigger("other", { name: "kino" });
 
 });
 
