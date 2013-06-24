@@ -30,6 +30,14 @@ test("if the namespace is exist, kino.namespace should not replace it", function
 
 });
 
+module("property");
+
+test("can create object's property", function () {
+    var obj = {myProp: "propval"};
+    kino.createProp(obj, "newProp.subProp", "hello world");
+    equal(obj.newProp.subProp, "hello world");
+});
+
 module("extend");
 
 test("can extend from Class", function () {
