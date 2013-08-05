@@ -107,6 +107,35 @@ test("can pass data to event handler", function () {
 
 });
 
+module("module and use");
+
+test("can use module after define it", function () {
+    expect(1);
+
+    kino.module("MyModule", function (expects) {
+        expects.sayHello = function (name) { return "hello " + name;};
+    });
+
+    kino.use(["MyModule"], function (myModule) {
+        equal(myModule.sayHello("kino"), "hello kino");
+    });
+});
+
+test("module can dependency other module", function () {
+    kino.module("MyWord", function (exports) {
+        exports.str = "hello";
+    });
+
+    kino.module("MyModule", ["MyWord"], function (myword, expects) {
+        expects.sayHello = function (name) { return myword.str +" " + name; };
+    });
+
+    kino.use(["MyModule"], function (myModule) {
+        equal(myModule.sayHello("kino"), "hello kino");
+    });
+
+});
+
 
 //test("collection should listen add event", function () {
 //    expect(1);
