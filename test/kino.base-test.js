@@ -136,32 +136,76 @@ test("module can dependency other module", function () {
 
 });
 
+test("can define a module by json object", function () {
+    kino.module("model", {
+        str: 'hello'
+    });
 
-//test("collection should listen add event", function () {
-//    expect(1);
-    
-//    var collection = new kino.Collection();
+    kino.use(["model"], function (model) {
+        equal(model.str, 'hello');
+    });
 
-//    collection.on("add", function (model) {
-//        equal(collection.length, 1);
-//    });
+});
 
-//    collection.add({name: 'James'});    
+test("can use export to inject", function () {
+    expect(2);
 
-//});
+    kino.module("IService", {
+        asynGetFlightData: function (callback) {
+        }
+    });
 
-//test("collection should listen remove event", function () {
-//    expect(1);
-    
-//    var collection = new kino.Collection();
-//    collection.add({ text: 'hello' });
-//    collection.add({ text: 'world' });
-//    collection.add({ text: '!' });
+    kino.module("FlightController", ["IService"], function (IService, exports) {
+        kino.extend(exports, kino.Events);
 
-//    collection.on("remove", function (model) {
-//        equal(collection.length, 2);
-//    });
+        exports.dosomething = function () {
+            IService.asynGetFlightData(function (result) {
+                exports.trigger("flightDataLoaded", [result]);
+            });
+        }
+    });
 
-//    collection.add({name: 'James'});    
+    kino.export("IService", {
+        asynGetFlightData: function (callback) {
+            callback([{ id: '123' }, { id: '234' }]);
+        }
+    });
 
-//});
+    kino.use(["FlightController"], function (controller) {
+        controller.on("flightDataLoaded", function (e, result) {
+            equal(result[0].id, '123');
+            equal(result[1].id, '234');
+        });
+        controller.dosomething();
+    });
+
+});
+
+test("export method should only influence the module that has dependency the export module", function () {
+    expect(3);
+
+    kino.module("IService", {
+        myAPI: function () {
+        }
+    });
+
+    kino.module("ModuleA", function () {
+        ok(true);
+    });
+
+    kino.module("ModuleB", ["IService"], function () {
+        ok(true);
+    });
+
+    kino.export("IService", {
+        myAPI: function () {
+            return "hello my api";
+        }
+    });
+
+    kino.use(["ModuleA", "ModuleB"], function (a, b) {
+    });
+
+});
+
+
