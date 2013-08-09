@@ -1,4 +1,4 @@
-[kino.razor](#) - an easy to use,razor style javascript template tool 
+[kino.base](#) - javascript base tools 
 ==================================================
 How to use
 --------------------------------------
