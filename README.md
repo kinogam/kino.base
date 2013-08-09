@@ -6,12 +6,6 @@ use on a webpage
 ```html
 	<script type="text/javascript" src="kino.base.js"></script>
 ```
-
-create a namespace
-```js
-	kino.namespace("myspace.hello.world");
-```
-
 create a namespace
 ```js
 	kino.namespace("myspace.hello.world");
