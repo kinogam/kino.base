@@ -121,7 +121,7 @@ test("can use module after define it", function () {
     });
 });
 
-test("module can dependency other module", function () {
+test("module can dependency on other module", function () {
     kino.module("MyWord", function (exports) {
         exports.str = "hello";
     });
