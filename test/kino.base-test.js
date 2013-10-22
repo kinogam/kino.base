@@ -93,12 +93,12 @@ test("can pass data to event handler", function () {
     var obj = {};
     kino.extend(obj, kino.Events);
 
-    obj.on("test", function (event, a, b) {
+    obj.on("test", function (a, b) {
         equal(a, "hello");
         equal(b, "world");
     });
 
-    obj.on("other", function (event, obj) {
+    obj.on("other", function (obj) {
         equal(obj.name, "kino");
     });
 
@@ -107,105 +107,82 @@ test("can pass data to event handler", function () {
 
 });
 
-//module("module and use");
+test("use event namespace", function () {
+    expect(3);
 
-//test("can use module after define it", function () {
-//    expect(1);
+    var obj = {};
+    kino.extend(obj, kino.Events);
 
-//    kino.module("MyModule", function (expects) {
-//        expects.sayHello = function (name) { return "hello " + name;};
-//    });
+    obj.on("test.a", function (msg) {
+        equal(msg, "hello")
+    });
 
-//    kino.use(["MyModule"], function (myModule) {
-//        equal(myModule.sayHello("kino"), "hello kino");
-//    });
-//});
+    obj.on("test.b", function (msg) {
+        equal(msg, "hello");
+    });
 
-//test("module can dependency on other module", function () {
-//    kino.module("MyWord", function (exports) {
-//        exports.str = "hello";
-//    });
+    obj.trigger("test", "hello");
 
-//    kino.module("MyModule", ["MyWord"], function (myword, expects) {
-//        expects.sayHello = function (name) { return myword.str +" " + name; };
-//    });
+    obj.trigger("test.b", "hello");
+});
 
-//    kino.use(["MyModule"], function (myModule) {
-//        equal(myModule.sayHello("kino"), "hello kino");
-//    });
+test("can remove all event", function () {
+    expect(0);
 
-//});
+    var obj = {};
+    kino.extend(obj, kino.Events);
 
-//test("can define a module by json object", function () {
-//    kino.module("model", {
-//        str: 'hello'
-//    });
+    obj.on("test1", function (msg) {
+        equal(msg, "hello")
+    });
 
-//    kino.use(["model"], function (model) {
-//        equal(model.str, 'hello');
-//    });
+    obj.on("test2", function (msg) {
+        equal(msg, "hello");
+    });
 
-//});
+    obj.off();
 
-//test("can use export to inject", function () {
-//    expect(2);
+    obj.trigger("test1");
+    obj.trigger("test2");
 
-//    kino.module("IService", {
-//        asynGetFlightData: function (callback) {
-//        }
-//    });
+});
 
-//    kino.module("FlightController", ["IService"], function (IService, exports) {
-//        kino.extend(exports, kino.Events);
+test("can remove specify event", function () {
+    expect(1);
 
-//        exports.dosomething = function () {
-//            IService.asynGetFlightData(function (result) {
-//                exports.trigger("flightDataLoaded", [result]);
-//            });
-//        }
-//    });
+    var obj = {};
+    kino.extend(obj, kino.Events);
 
-//    kino.export("IService", {
-//        asynGetFlightData: function (callback) {
-//            callback([{ id: '123' }, { id: '234' }]);
-//        }
-//    });
+    obj.on("test1", function () {
+        ok(false);
+    });
 
-//    kino.use(["FlightController"], function (controller) {
-//        controller.on("flightDataLoaded", function (e, result) {
-//            equal(result[0].id, '123');
-//            equal(result[1].id, '234');
-//        });
-//        controller.dosomething();
-//    });
+    obj.on("test2", function () {
+        ok(true);
+    });
 
-//});
+    obj.off("test1");
 
-//test("export method should only influence the module that has dependency the export module", function () {
-//    expect(3);
+    obj.trigger("test1");
+    obj.trigger("test2");
+});
 
-//    kino.module("IService", {
-//        myAPI: function () {
-//        }
-//    });
+test("can remove specify event with event namespace", function () {
+    expect(1);
 
-//    kino.module("ModuleA", function () {
-//        ok(true);
-//    });
+    var obj = {};
+    kino.extend(obj, kino.Events);
 
-//    kino.module("ModuleB", ["IService"], function () {
-//        ok(true);
-//    });
+    obj.on("test.a", function () {
+        ok(false);
+    });
 
-//    kino.export("IService", {
-//        myAPI: function () {
-//            return "hello my api";
-//        }
-//    });
+    obj.on("test.b", function () {
+        ok(true);
+    });
 
-//    kino.use(["ModuleA", "ModuleB"], function (a, b) {
-//    });
+    obj.off("test.a");
 
-//});
-
-
+    obj.trigger("test.a");
+    obj.trigger("test.b");
+});
